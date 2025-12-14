@@ -4,9 +4,26 @@ type process_error =
   | Execution_failed of int
 
 let rg_command =
-  [| "rg"; "--null"; "--no-heading"; "--line-number"; "--column" |]
+  [| "rg"; "--pcre2"; "--null"; "--no-heading"; "--line-number"; "--column" |]
 
-let markers_regex = "TODO+(:| )|FIX+(:| )|FIXME+(:| )|BUG+(:| )|HACK+(:| )"
+(* Attempt 
+ * (?m) — multi-line mode
+ * \s*  — possible whitespace
+ * \b   — end of word bounds
+ * //   — C, C++, Java, C#, JS/TS, Rust, Go Swift, Kotlin, other C-like langs
+ * #    — shell scripts, Python, Ruby, Perl, Makefiles, YAML, TOML,
+ *        config formats: Dockerfile, .env, etc.
+ * --   — Haskell, SQLs, Lua, Ada, some assemblies
+ * ;    — LISP langs, assemblies, old-style config files
+ * %    — LaTeX, PostScript, math DSLs
+ * \(\* — ML functional langs, like OCaml, F#
+ * /\*  — Same as //, but multi-line
+ * \*   – Same as //, but multi-line
+ * <!-- — markup langs, like HTML, XML, JSX/TSX
+ *)
+let markers_regex =
+  {|(?m)^\s*(//|#|--|;|%|\(\*|/\*|\*|<!--)\s*(TODO+|FIX+|FIXME+|HACK+|BUG+)\b|}
+
 let ignore_readme_glob = "--glob=!README.md"
 
 let run_rg (args : string array) : (string list, process_error) result =
