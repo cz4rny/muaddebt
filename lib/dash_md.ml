@@ -8,7 +8,7 @@ let footer =
 
 let pp_dashbaord (fmt : Format.formatter) (todos : Todo.t list) =
   Format.pp_set_margin fmt 100_000;
-  fprintf fmt "%s" header;
+  fprintf fmt "@.%s" header;
   fprintf fmt
     {|@.
 > Tech debt is the mind-killer. MuadʾDebt combs your code for TODOs.  
@@ -22,7 +22,7 @@ let pp_dashbaord (fmt : Format.formatter) (todos : Todo.t list) =
   List.iter
     (fun t ->
       let loc = t.location in
-      fprintf fmt "@.  - [%s: %s](%s#%d)"
+      fprintf fmt "@.  - [%s: %s](%s#L%d)"
         (Marker.to_string t.marker)
         t.msg loc.file loc.line)
     most_urgent_first_todos;

@@ -35,3 +35,8 @@ Run `muaddebt` in your repo and the README.md will get this 👇.
 ```
 
 > 💡Note: only the first line is extracted, so make it count!
+
+## Tasks
+
+- [ ] Adds empty line before dashboard EACH time executed
+- [ ] Escape \[\] brackets in output
