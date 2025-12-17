@@ -22,16 +22,18 @@
  (depends
   (ocaml
    (>= 5.4.0))
-  dune
+  (dune
+   (>= 3.17))
   (ppx_deriving
    (>= 6.1.1))
   (ppx_enumerate
    (>= 0.17.0))
   ;; Dev deps
-  ocaml-lsp-server
-  merlin
-  ocamlformat
-  odig)
+  ; ocaml-lsp-server
+  ; merlin
+  ; ocamlformat
+  ; odig
+  )
  (tags
   ("add topics" "to describe" your project)))
 

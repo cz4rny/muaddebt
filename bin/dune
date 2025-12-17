@@ -1,6 +1,8 @@
 (executable
  (public_name muaddebt)
  (name main)
+ ; (flags
+ ;  (:standard -cclib -static))
  (preprocess
   (pps ppx_deriving.show))
  (libraries muaddebt))

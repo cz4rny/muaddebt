@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            artifact_suffix: linux-x86_64
+            container:
+              image: ghcr.io/${{ github.repository }}-builder
+            compiler: ocaml-variants.5.4.0+options,ocaml-option-musl,ocaml-option-static
+          # - os: macos-15-intel
+          #   artifact_suffix: macos-x86_64
+          #   compiler: ocaml-variants.5.4.0+options
+          # - os: macos-15
+          #   artifact_suffix: macos-arm64
+          #   compiler: ocaml-variants.5.4.0+options
+          # - os: windows-2022
+          #   artifact_suffix: windows-x86_64
+          #   compiler: ocaml-variants.5.4.0+options
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ocaml/setup-ocaml@v3
+        if: runner.os != 'Linux'
+        with:
+          ocaml-compiler: ${{ matrix.compiler }}
+          opam-pin: false
+          opam-disable-sandboxing: ${{ matrix.container && true || false }}
+          dune-cache: true
+          cache-prefix: v2-${{ runner.os }}-${{ matrix.artifact_suffix }}
+
+      - name: Install deps
+        shell: bash
+        run: |
+          opam install . --deps-only -y
+
+      - name: Build (release)
+        shell: bash
+        run: |
+          opam exec -- dune build --profile release
+
+      - name: (Optional) check linkage
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -eux
+          BIN="_build/default/bin/main.exe"
+          file "$BIN" || true
+          ldd "$BIN" || echo "Static binary confirmed"
+
+      - name: Package
+        shell: bash
+        run: |
+          set -euxo pipefail
+          NAME="muaddebt"
+          # VERSION="${GITHUB_REF_NAME}" # tag like v1.2.3
+          VERSION="v0.1.0"
+
+          mkdir -p dist
+
+          OUT="dist/${NAME}"
+          if [[ "${{ matrix.os }}" == windows* ]]; then
+            OUT="${OUT}.exe"
+          fi
+          cp "_build/default/bin/main.exe" "${OUT}"
+          chmod +x "${OUT}"
+
+          # Strip where available (best-effort)
+          if command -v strip >/dev/null 2>&1; then
+            strip "$OUT" || true
+          fi
+
+          PKG_BASENAME="${NAME}-${VERSION}-${{ matrix.artifact_suffix }}"
+
+          if [[ "${{ matrix.os }}" == windows* ]]; then
+            (cd dist && 7z a "../${PKG_BASENAME}.zip" .)
+          else
+            tar -C dist -czf "${PKG_BASENAME}.tar.gz" .
+          fi
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            *.tar.gz
+            *.zip
