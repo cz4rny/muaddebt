@@ -8,9 +8,9 @@ let footer =
 
 let pp_dashbaord (fmt : Format.formatter) (todos : Todo.t list) =
   Format.pp_set_margin fmt 100_000;
-  fprintf fmt "@.%s" header;
+  fprintf fmt "%s@." header;
   fprintf fmt
-    {|@.
+    {|
 > Tech debt is the mind-killer. MuadʾDebt combs your code for TODOs.  
 > You must face your debt; resolve it and let it pass.  
 > Where the debt has gone, only flow remains.@.|};
@@ -27,7 +27,7 @@ let pp_dashbaord (fmt : Format.formatter) (todos : Todo.t list) =
         t.msg loc.file loc.line)
     most_urgent_first_todos;
 
-  fprintf fmt "@.@.%s" footer
+  fprintf fmt "@.@.%s@." footer
 
 let is_header (line : string) : bool =
   String.starts_with ~prefix:header (String.trim line)

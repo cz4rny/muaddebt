@@ -122,9 +122,10 @@ let () =
         in
         let after_dashboard = drop_while_dashboard after_start in
 
+        if after_dashboard = [] then Format.fprintf fmt "@.";
         Dash_md.pp_dashbaord fmt todos;
 
-        List.iter (fun line -> Format.fprintf fmt "@.%s" line) after_dashboard;
+        List.iter (fun line -> Format.fprintf fmt "%s@." line) after_dashboard;
 
         Format.pp_print_flush fmt ();
         write buff
