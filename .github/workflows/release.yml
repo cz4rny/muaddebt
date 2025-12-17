@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "NOv*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            artifact_suffix: linux-x86_64
+            container:
+              image: ghcr.io/${{ github.repository }}-builder:v0.1.0
+              options: --user 1001:1001
+          - os: macos-15
+            artifact_suffix: macos-arm64
+            compiler: ocaml-variants.5.4.0+options
+          - os: macos-15-intel
+            artifact_suffix: macos-x86_64
+            compiler: ocaml-variants.5.4.0+options
+          - os: windows-2022
+            artifact_suffix: windows-x86_64
+            compiler: ocaml-variants.5.4.0+options
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ocaml/setup-ocaml@v3
+        if: runner.os != 'Linux'
+        with:
+          ocaml-compiler: ${{ matrix.compiler }}
+          opam-pin: false
+          opam-disable-sandboxing: ${{ matrix.container && true || false }}
+          dune-cache: true
+          cache-prefix: v2-${{ runner.os }}-${{ matrix.artifact_suffix }}
+
+      - name: Install deps
+        shell: bash
+        run: |
+          opam exec -- opam install . --deps-only -y
+
+      - name: Build (release)
+        shell: bash
+        run: |
+          PROFILE="release"
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+             PROFILE="static"
+          fi
+
+          echo "Building with profile: $PROFILE"
+          opam exec -- dune build --profile "${PROFILE}"
+
+      - name: (Optional) check linkage
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          BIN="_build/default/bin/main.exe"
+          set -eux
+          readelf -l "${BIN}" | grep -i interp || echo "No INTERP => good"
+          ldd "${BIN}" || echo "not a dynamic executable => good"
+
+      - name: Package
+        shell: bash
+        run: |
+          set -euxo pipefail
+          NAME="muaddebt"
+          VERSION="${GITHUB_REF_NAME}" # tag like v1.2.3
+
+          PKG_BASENAME="${NAME}-${VERSION}-${{ matrix.artifact_suffix }}"
+          mkdir -p "${PKG_BASENAME}"
+
+          OUT="${PKG_BASENAME}/${NAME}"
+          if [[ "${{ matrix.os }}" == windows* ]]; then
+            OUT="${OUT}.exe"
+          fi
+          cp "_build/default/bin/main.exe" "${OUT}"
+          chmod 0755 "${OUT}"
+
+          # Strip where available (best-effort)
+          if command -v strip >/dev/null 2>&1; then
+            strip "$OUT" || true
+          fi
+
+          if [[ "${{ matrix.os }}" == windows* ]]; then
+            7z a "${PKG_BASENAME}.zip" "${PKG_BASENAME}"
+          else
+            tar -czf "${PKG_BASENAME}.tar.gz" "${PKG_BASENAME}"
+          fi
+
+      - name: Create Release and Upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          if [[ "${{ matrix.os }}" == windows* ]]; then
+            FILES="*.zip"
+          else
+            FILES="*.tar.gz"
+          fi
+          gh release create "${GITHUB_REF_NAME}" \
+            "${FILES}" \
+            --title "Release ${GITHUB_REF_NAME}" \
+            --generate-notes \
+            || gh release upload "${GITHUB_REF_NAME}" "${FILES}" --clobber

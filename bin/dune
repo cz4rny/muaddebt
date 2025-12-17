@@ -3,4 +3,10 @@
  (name main)
  (preprocess
   (pps ppx_deriving.show))
- (libraries muaddebt))
+ (libraries muaddebt)
+ (link_flags :standard))
+
+(env
+ (static
+  (link_flags
+   (:standard -cclib -static))))
