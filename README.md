@@ -39,4 +39,3 @@ Run `muaddebt` in your repo and the README.md will get this 👇.
 ## Tasks
 
 - [x] Adds empty line before dashboard EACH time executed
-- [ ] Escape \[\] brackets in output
