@@ -3,4 +3,4 @@ type process_error =
   (* | Read_failed of string *)
   | Execution_failed of int
 
-val find_todos : bool -> (string list, process_error) result
+val find_todos : bool -> (Todo.t list, process_error) result
