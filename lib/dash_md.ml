@@ -1,5 +1,6 @@
 open Format
 
+let ( <?> ) (c : int) (cmp : unit -> int) = if c <> 0 then c else cmp ()
 let header = "## Tech Debt Dashboard"
 
 let footer =
@@ -17,7 +18,13 @@ let pp_dashbaord (fmt : Format.formatter) (todos : Todo.t list) =
 
   let open Todo in
   let most_urgent_first_todos =
-    List.stable_sort (fun t1 t2 -> Int.compare t2.urgency t1.urgency) todos
+    List.stable_sort
+      (fun t1 t2 ->
+        Int.compare t2.urgency t1.urgency <?> fun () ->
+        String.compare t1.location.file t2.location.file <?> fun () ->
+        Int.compare t1.location.line t2.location.line <?> fun () ->
+        Int.compare t1.location.column t2.location.column)
+      todos
   in
   List.iter
     (fun t ->
