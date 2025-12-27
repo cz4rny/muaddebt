@@ -28,6 +28,7 @@
    (>= 6.1.1))
   (ppx_enumerate
    (>= 0.17.0))
+  (alcotest :with-test)
   ;; Dev deps
   ; ocaml-lsp-server
   ; merlin

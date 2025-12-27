@@ -8,7 +8,7 @@ let footer =
    🐫_</sub>"
 
 let pp_dashbaord (fmt : Format.formatter) (todos : Todo.t list) =
-  Format.pp_set_margin fmt 100_000;
+  pp_set_margin fmt 100_000;
   fprintf fmt "%s@." header;
   fprintf fmt
     {|
@@ -34,7 +34,8 @@ let pp_dashbaord (fmt : Format.formatter) (todos : Todo.t list) =
         t.msg loc.file loc.line)
     most_urgent_first_todos;
 
-  fprintf fmt "@.@.%s@." footer
+  fprintf fmt "@.@.%s@." footer;
+  pp_print_flush fmt ()
 
 let is_header (line : string) : bool =
   String.starts_with ~prefix:header (String.trim line)
