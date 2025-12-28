@@ -40,3 +40,4 @@ Run `muaddebt` in your repo and the `README.md` will get this 👇.
 
 - [x] Adds empty line before dashboard if appending
 - [ ] Remove end-of-comment marks from marker title
+- [ ] Apply Data Oriented Design: no lists for example
