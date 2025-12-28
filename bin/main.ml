@@ -1,4 +1,3 @@
-open Result.Syntax
 open Muaddebt
 
 let or_die ?(code = 1) fmt =

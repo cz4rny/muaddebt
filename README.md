@@ -9,7 +9,7 @@ Run `muaddebt` in your repo and the `README.md` will get this 👇.
 > Where the debt has gone, only flow remains.
 
   - [HACK: repeat last letter for higher and higher priority](README.md#L23)
-  - [FIX: or even OCaml!](README.md#L33)
+  - [FIX: or even OCaml!](README.md#L32)
   - [TODO: this is a C comment](README.md#L21)
   - [BUG: any language supported, like bash](README.md#L28)
 
@@ -29,9 +29,7 @@ Run `muaddebt` in your repo and the `README.md` will get this 👇.
 ```
 
 ```OCaml
-(* 
- * FIXX: or even OCaml! 
- *)
+(* FIXX: or even OCaml! *)
 ```
 
 > 💡Note: only the first line is extracted, so make it count!
@@ -39,5 +37,5 @@ Run `muaddebt` in your repo and the `README.md` will get this 👇.
 ## Tasks
 
 - [x] Adds empty line before dashboard if appending
-- [ ] Remove end-of-comment marks from marker title
+- [x] Remove end-of-comment marks from marker title
 - [ ] Apply Data Oriented Design: no lists for example

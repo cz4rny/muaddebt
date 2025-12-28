@@ -18,7 +18,7 @@ RUN opam init --disable-sandboxing -y \
 
 WORKDIR /src
 COPY --chown=opam:opam *.opam ./
-RUN opam install . --deps-only -y
+RUN opam install . --deps-only --with-test -y
 
 ENTRYPOINT ["opam", "exec", "--"]
 CMD ["bash"]

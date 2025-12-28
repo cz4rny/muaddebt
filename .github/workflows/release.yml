@@ -20,7 +20,7 @@ jobs:
           - os: ubuntu-22.04
             artifact_suffix: linux-x86_64
             container:
-              image: ghcr.io/${{ github.repository }}-builder:v0.1.0
+              image: ghcr.io/${{ github.repository }}-builder:main
               options: --user 1001:1001
           - os: macos-15
             artifact_suffix: macos-arm64
@@ -47,7 +47,7 @@ jobs:
       - name: Install deps
         shell: bash
         run: |
-          opam exec -- opam install . --deps-only -y
+          opam exec -- opam install . --deps-only --with-test -y
 
       - name: Build (release)
         shell: bash

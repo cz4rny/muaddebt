@@ -23,6 +23,14 @@ let rg_command =
  *)
 let markers_regex = {|(?m)^\s*(//|#|--|;|%|\(\*|/\*|\*|<!--)\s*(TODO+|FIX+|FIXME+|HACK+|BUG+)\b|}
 
+(*
+ * [ 	]*  — possible whitespace
+ * \*\)   — ML functional langs, like OCaml, F#
+ * \*/    — C-like end
+ * <--    — markup langs, like HTML, XML, JSX/TSX
+ *)
+let comment_terminator_regex = Str.regexp {|[ 	]*\(\*)\|\*/\|-->\)[ 	]*$|}
+
 let ignore_readme_glob = "--glob=!README.md"
 
 let run_rg (args : string array) : (string list, process_error) result =
@@ -89,8 +97,8 @@ let parse_rg_line (line : string) : Todo.t option =
   let rec scan current_idx : Todo.t option =
     if current_idx >= total_len then (
       Printf.eprintf "No marker found in: %s\n" line;
-      None)
-    else
+      None
+    ) else
       let try_match (marker_str, marker) =
         match match_at line current_idx marker_str with
         | None -> None
@@ -107,7 +115,28 @@ let parse_rg_line (line : string) : Todo.t option =
               let msg = String.trim (String.sub line idx_space (total_len - idx_space))
               in Some ({ location; marker; urgency; msg } : Todo.t)
         end
-  in scan (read + 1)
+  in
+  scan (read + 1)
+    |> Option.map begin fun (todo: Todo.t): Todo.t ->
+      let msg_no_terminator = Str.replace_first comment_terminator_regex "" todo.msg in
+      {todo with msg = msg_no_terminator}
+    end
+
+let%expect_test "strips end comment marks" =
+  let print_rg_todo (line: string) = 
+    let todo = Option.get @@ parse_rg_line line in
+    Printf.printf "%s: %s\n" (Marker.to_string todo.marker) todo.msg;
+  in
+
+  print_rg_todo "nofile\x001:1: TODO: ocaml comment *)"      ;
+  print_rg_todo "nofile\x001:1: FIXME: C-style comment	*/  ";
+  print_rg_todo "nofile\x001:1: BUG: HTML-like comment-->	"  ;
+
+  [%expect {|
+    TODO: ocaml comment
+    FIX: C-style comment
+    BUG: HTML-like comment
+    |}]
 
 let parse_rg_output (lines : string list) : Todo.t list =
   List.filter_map parse_rg_line lines

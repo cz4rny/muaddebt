@@ -20,15 +20,12 @@
  (synopsis "A short synopsis")
  (description "A longer description")
  (depends
-  (ocaml
-   (>= 5.4.0))
-  (dune
-   (>= 3.17))
-  (ppx_deriving
-   (>= 6.1.1))
-  (ppx_enumerate
-   (>= 0.17.0))
-  (alcotest :with-test)
+  (ocaml           (>= 5.4.0))
+  (dune            (>= 3.17))
+  (ppx_deriving    (>= 6.1.1))
+  (ppx_enumerate   (>= 0.17.0))
+  (alcotest   (and (>= 1.9.1) :with-test))
+  (ppx_expect (and (>= v0.17.3) :with-test))
   ;; Dev deps
   ; ocaml-lsp-server
   ; merlin
