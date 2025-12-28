@@ -1,6 +1,6 @@
 # MuadʾDebt
 
-Run `muaddebt` in your repo and the README.md will get this 👇.
+Run `muaddebt` in your repo and the `README.md` will get this 👇.
 
 ## Tech Debt Dashboard
 
@@ -38,4 +38,5 @@ Run `muaddebt` in your repo and the README.md will get this 👇.
 
 ## Tasks
 
-- [x] Adds empty line before dashboard EACH time executed
+- [x] Adds empty line before dashboard if appending
+- [ ] Remove end-of-comment marks from marker title

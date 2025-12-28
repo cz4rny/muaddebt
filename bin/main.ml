@@ -18,9 +18,11 @@ let () =
       Printf.eprintf "Error: rg exited with code %d\n%!" code
   | Error (Ripgrep.Launch_failed msg) ->
       Printf.eprintf "Error: Failed to launch rg: %s\n%!" msg
-  | Ok [] -> Printf.eprintf "✓ No issues found!\n%!"
+  | Ok [] -> Printf.eprintf "👏 No tech-debt found, good job!\n%!"
   | Ok todos -> (
       match Readme_io.update_readme todos with
       | Ok () -> ()
       | Error e ->
-          Printf.eprintf "Failed to update: %s\n%!" (Readme_io.error_message e))
+          Printf.eprintf "Failed to update %s: %s\n%!"
+            Readme_io.default_file_path
+            (Readme_io.error_message e))
