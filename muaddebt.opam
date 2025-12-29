@@ -11,9 +11,7 @@ depends: [
   "ocaml" {>= "5.4.0"}
   "dune" {>= "3.17" & >= "3.17"}
   "ppx_deriving" {>= "6.1.1"}
-  "ppx_enumerate" {>= "0.17.0"}
   "alcotest" {>= "1.9.1" & with-test}
-  "ppx_expect" {>= "v0.17.3" & with-test}
   "odoc" {with-doc}
 ]
 build: [

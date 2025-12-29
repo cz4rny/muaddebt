@@ -4,3 +4,7 @@ type process_error =
   | Execution_failed of int
 
 val find_todos : bool -> (Todo.t list, process_error) result
+
+module Private : sig
+  val parse_rg_line : string -> Todo.t option
+end

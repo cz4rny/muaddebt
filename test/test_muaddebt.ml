@@ -222,16 +222,3 @@ The tech-debt dashbaord BELOW should be replaced.
     read_whole_file file_path |> Alcotest.(check visible_string)
       "same file_path" expected_readme
   end
-
-let () = Alcotest.run "MuadʾDebt" [
-  ( "readme variants", [
-    Alcotest.test_case "no_readme"           `Quick test_no_readme;
-    Alcotest.test_case "empty_readme"        `Quick test_empty_readme;
-    Alcotest.test_case "no_dashboard"        `Quick test_no_dashboard;
-  ]);
-  ( "dashboard placement", [
-    Alcotest.test_case "dashbaord_at_top"    `Quick test_dashboard_at_top;
-    Alcotest.test_case "dashbaord_in_middle" `Quick test_dashboard_in_middle;
-    Alcotest.test_case "dashbaord_at_end"    `Quick test_dashboard_at_end;
-  ]);
-]

@@ -99,12 +99,12 @@ let parse_rg_line (line : string) : Todo.t option =
       Printf.eprintf "No marker found in: %s\n" line;
       None
     ) else
-      let try_match (marker_str, marker) =
+      let try_match ((marker_str: string), (marker: Marker.t) ) =
         match match_at line current_idx marker_str with
         | None -> None
         | Some (idx_read, urgency) -> Some (idx_read, marker, urgency)
       in
-      match List.find_map try_match Marker.all_strings with
+      match Array.find_map try_match Marker.all_strings with
       | None -> scan (current_idx + 1)
       | Some (idx_read, marker, urgency) -> begin
           match String.index_from_opt line idx_read ' ' with
@@ -122,22 +122,6 @@ let parse_rg_line (line : string) : Todo.t option =
       {todo with msg = msg_no_terminator}
     end
 
-let%expect_test "strips end comment marks" =
-  let print_rg_todo (line: string) = 
-    let todo = Option.get @@ parse_rg_line line in
-    Printf.printf "%s: %s\n" (Marker.to_string todo.marker) todo.msg;
-  in
-
-  print_rg_todo "nofile\x001:1: TODO: ocaml comment *)"      ;
-  print_rg_todo "nofile\x001:1: FIXME: C-style comment	*/  ";
-  print_rg_todo "nofile\x001:1: BUG: HTML-like comment-->	"  ;
-
-  [%expect {|
-    TODO: ocaml comment
-    FIX: C-style comment
-    BUG: HTML-like comment
-    |}]
-
 let parse_rg_output (lines : string list) : Todo.t list =
   List.filter_map parse_rg_line lines
 
@@ -147,3 +131,7 @@ let find_todos (include_readme : bool) : (Todo.t list, process_error) result =
     (if include_readme then [||] else [| ignore_readme_glob |]);
     [| markers_regex |];
   ] |> run_rg |> Result.map parse_rg_output
+
+module Private = struct
+  let parse_rg_line = parse_rg_line
+end
