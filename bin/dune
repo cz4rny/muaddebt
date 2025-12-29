@@ -1,9 +1,17 @@
 (executable
  (public_name muaddebt)
  (name main)
+ (modes native)
  (libraries muaddebt))
 
 (env
+ (dev
+  (flags (:standard -w +a-4-42-44-48)))
+ 
+ (release
+  (flags (:standard -w -a))
+  (ocamlopt_flags (:standard -O3)))
+
  (static
   (link_flags
-   (:standard -ccopt -static -ccopt -no-pie -cclib -static))))
+   (:standard -ccopt -static -ccopt -no-pie -ccopt -s -cclib -static))))

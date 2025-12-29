@@ -1,5 +1,3 @@
 (library
  (name muaddebt)
- (preprocess
-  (pps ppx_deriving.enum))
  (libraries unix str))

@@ -12,7 +12,7 @@ WORKDIR /home/gha
 RUN opam init --disable-sandboxing -y \
   && opam update \
   && opam switch create musl \
-    ocaml-variants.5.4.0+options ocaml-option-musl \
+    ocaml-variants.5.4.0+options ocaml-option-flambda ocaml-option-musl \
     --assume-depexts \
   && opam switch set musl
 

@@ -9,8 +9,7 @@ homepage: "https://github.com/cz4rny/muaddebt"
 bug-reports: "https://github.com/cz4rny/muaddebt/issues"
 depends: [
   "ocaml" {>= "5.4.0"}
-  "dune" {>= "3.17" & >= "3.17"}
-  "ppx_deriving" {>= "6.1.1"}
+  "dune" {>= "3.17" & >= "3.20"}
   "alcotest" {>= "1.9.1" & with-test}
   "odoc" {with-doc}
 ]

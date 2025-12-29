@@ -24,13 +24,13 @@ jobs:
               options: --user 1001:1001
           - os: macos-15
             artifact_suffix: macos-arm64
-            compiler: ocaml-variants.5.4.0+options
+            compiler: ocaml-variants.5.4.0+options,ocaml-option-flambda
           - os: macos-15-intel
             artifact_suffix: macos-x86_64
-            compiler: ocaml-variants.5.4.0+options
+            compiler: ocaml-variants.5.4.0+options,ocaml-option-flambda
           - os: windows-2022
             artifact_suffix: windows-x86_64
-            compiler: ocaml-variants.5.4.0+options
+            compiler: ocaml-variants.5.4.0+options,ocaml-option-flambda
 
     steps:
       - uses: actions/checkout@v6

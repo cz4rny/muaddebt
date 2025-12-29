@@ -21,8 +21,7 @@
  (description "A longer description")
  (depends
   (ocaml           (>= 5.4.0))
-  (dune            (>= 3.17))
-  (ppx_deriving    (>= 6.1.1))
+  (dune            (>= 3.20))
   (alcotest   (and (>= 1.9.1) :with-test))
   ;; Dev deps
   ; ocaml-lsp-server
